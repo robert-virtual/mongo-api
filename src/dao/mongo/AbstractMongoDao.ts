@@ -3,7 +3,7 @@ import { IBaseDao } from "../IBaseDao";
 
 
 export abstract class AbstractMongoDao<T> implements IBaseDao<T>{
-    connection: unknown;
+    connection: MongoClient;
     persistenceName: string;
     db:Db
     collection:Collection<T>
@@ -17,8 +17,8 @@ export abstract class AbstractMongoDao<T> implements IBaseDao<T>{
       return this.collection.insertOne(data as OptionalUnlessRequiredId<T>) as Promise<T>
 
     }
-    find(): Promise<T[]> {
-      return this.collection.find<T>({}).toArray()
+    find(filter?:Partial<T>): Promise<T[]> {
+      return this.collection.find<T>(filter).toArray()
     }
     findById(id: string): Promise<T> {
       const _id = new ObjectId(id) as Filter<T>

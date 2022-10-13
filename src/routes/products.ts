@@ -5,9 +5,10 @@ import { ProductsMysqlDao } from "../dao/mysql/ProductsMysqlDao";
 const products = new ProductsMysqlDao();
 const prodsRouter = Router();
 
-prodsRouter.get("/", async (_req, res) => {
+prodsRouter.get("/", async (req, res) => {
   try {
-    const data = await products.find();
+    const {name} = req.query as {name:string}
+    const data = await products.find({name});
     res.json({ msg: "get prodcuts", data });
     
   } catch (error) {

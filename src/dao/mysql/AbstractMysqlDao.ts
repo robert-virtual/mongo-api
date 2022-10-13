@@ -21,8 +21,17 @@ export abstract class AbstractMysqlDao<T> implements IBaseDao<T> {
       values
     ) as Promise<T>;
   }
-  async find(): Promise<T[]> {
-    const res = await this.connection.query(`select * from ${this.persistenceName}`);
+  async find(filter?:Partial<T>): Promise<T[]> {
+    const params = Object.keys(filter).filter(e=> filter[e])
+    const values = Object.values(filter).filter(e=> e)
+    
+    const where = values.length
+      ? `where ${params.map(e=>`${e}=?`).join(",")}`
+      : ""
+    const res = await this.connection.query(
+    `select * from ${this.persistenceName} ${where}`,
+   values 
+    );
     return res[0] as T[]
   }
   findById(id: number): Promise<T> {
