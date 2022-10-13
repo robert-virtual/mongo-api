@@ -1,4 +1,4 @@
-import { Connection } from "mysql2/promise";
+import { Connection ,RowDataPacket} from "mysql2/promise";
 import { IBaseDao } from "../IBaseDao";
 
 export abstract class AbstractMysqlDao<T> implements IBaseDao<T> {
@@ -21,9 +21,9 @@ export abstract class AbstractMysqlDao<T> implements IBaseDao<T> {
       values
     ) as Promise<T>;
   }
-  find(): Promise<T[]> {
-    const res = this.connection.query(`select * from ${this.persistenceName}`);
-    return res as unknown as Promise<T[]>;
+  async find(): Promise<T[]> {
+    const res = await this.connection.query(`select * from ${this.persistenceName}`);
+    return res[0] as T[]
   }
   findById(id: number): Promise<T> {
     return this.connection.query(

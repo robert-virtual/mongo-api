@@ -1,13 +1,19 @@
 import { Router } from "express";
-import { ProductsMongoDao } from "../dao/mongo/ProductsMongoDao";
+// import { ProductsMongoDao } from "../dao/mongo/ProductsMongoDao";
+import { ProductsMysqlDao } from "../dao/mysql/ProductsMysqlDao";
 // import { Products } from "../libs/Products";
 
-const products = new ProductsMongoDao();
+const products = new ProductsMysqlDao();
 const prodsRouter = Router();
 
 prodsRouter.get("/", async (_req, res) => {
-  const data = await products.find();
-  res.json({ msg: "get prodcuts", data });
+  try {
+    const data = await products.find();
+    res.json({ msg: "get prodcuts", data });
+    
+  } catch (error) {
+    res.status(500).json({ error: error.message});
+  }
 });
 
 prodsRouter.get("/:id", (req, res) => {
