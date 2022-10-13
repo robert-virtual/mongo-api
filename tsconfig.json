@@ -24,12 +24,5 @@
 
     /* Completeness */
     "skipLibCheck": true,                                 /* Skip type checking all .d.ts files. */
-    "paths":{
-      "@mongo/*":["src/dao/mongo"],
-      "@mysql/*":["src/dao/mysql"],
-      "@entities/*":["src/dao/entities"],
-      "@dao/*":["src/dao"],
-      "@config/*":["src/config"]
-    }
   }
 }
