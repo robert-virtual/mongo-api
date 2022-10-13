@@ -1,4 +1,4 @@
-import { Connection, OkPacket } from "mysql2/promise";
+import { Connection, OkPacket, RowDataPacket } from "mysql2/promise";
 import { IBaseDao } from "../IBaseDao";
 
 export abstract class AbstractMysqlDao<T> implements IBaseDao<T> {
@@ -29,26 +29,28 @@ export abstract class AbstractMysqlDao<T> implements IBaseDao<T> {
     const where = values.length
       ? `where ${params.map((e) => `${e}=?`).join(",")}`
       : "";
-    const res = await this.connection.query(
+
+    const [res] = await this.connection.query<RowDataPacket[]>(
       `select * from ${this.persistenceName} ${where}`,
       values
     );
-    return res[0] as T[];
+    return res as T[];
   }
-  findById(id: string): Promise<T> {
-    return this.connection.query(
+  async findById(id: string): Promise<T> {
+    const [res] = await this.connection.query<RowDataPacket[]>(
       `select * from ${this.persistenceName} where _id = ? `,
       [+id]
-    ) as Promise<T>;
+    );
+    return res as T;
   }
   async update(id: string, data: Partial<T>): Promise<boolean> {
     const values = Object.values(data);
     const fields = Object.keys(data);
     const params = fields.map((e) => `${e}=?`);
-      const [info] = await this.connection.execute<OkPacket>(
-        `update ${this.persistenceName} set ${params.join(",")} where _id = ? `,
-        [...values, +id]
-      );
+    const [info] = await this.connection.execute<OkPacket>(
+      `update ${this.persistenceName} set ${params.join(",")} where _id = ? `,
+      [...values, +id]
+    );
     return info.affectedRows == 1;
   }
   async delete(id: string): Promise<boolean> {
