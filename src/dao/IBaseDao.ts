@@ -5,7 +5,7 @@ export interface IBaseDao<T>{
   persistenceName:string
   create(data:T):Promise<T>
   find(filter?:Partial<T>):Promise<T[]>
-  findById(id:unknown):Promise<T>
-  update(id:unknown,data:Partial<T>):Promise<unknown>
-  delete(id:unknown):Promise<unknown>
+  findById(id:string):Promise<T>
+  update(id:string,data:Partial<T>):Promise<unknown>
+  delete(id:string):Promise<unknown>
 }

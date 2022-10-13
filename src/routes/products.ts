@@ -7,12 +7,11 @@ const prodsRouter = Router();
 
 prodsRouter.get("/", async (req, res) => {
   try {
-    const {name} = req.query as {name:string}
-    const data = await products.find({name});
+    const { name } = req.query as { name: string };
+    const data = await products.find({ name });
     res.json({ msg: "get prodcuts", data });
-    
   } catch (error) {
-    res.status(500).json({ error: error.message});
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -30,14 +29,24 @@ prodsRouter.post("/", async (req, res) => {
   }
 });
 
-prodsRouter.put("/:id", (req, res) => {
-  const id = req.params.id;
-  res.json({ msg: "put prodcuts" });
+prodsRouter.put("/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const data = await products.update(id, req.body);
+    res.json({ msg: "put prodcuts", data });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 prodsRouter.delete("/:id", (req, res) => {
-  const id = req.params.id;
-  res.json({ msg: "delete prodcuts" });
+  try {
+    const id = req.params.id;
+    const data = products.delete(id);
+    res.json({ msg: "delete prodcuts",data });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 export default prodsRouter;
