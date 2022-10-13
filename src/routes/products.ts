@@ -1,7 +1,6 @@
 import { Router } from "express";
-// import { ProductsMongoDao } from "../dao/mongo/ProductsMongoDao";
 import { ProductsMysqlDao } from "../dao/mysql/ProductsMysqlDao";
-// import { Products } from "../libs/Products";
+// import { ProductsMongoDao } from "../dao/mongo/ProductsMongoDao";
 
 const products = new ProductsMysqlDao();
 const prodsRouter = Router();
