@@ -5,6 +5,7 @@ import {
   MongoClient,
   ObjectId,
   OptionalUnlessRequiredId,
+  UpdateFilter,
 } from "mongodb";
 import { IBaseDao } from "../IBaseDao";
 
@@ -27,20 +28,23 @@ export abstract class AbstractMongoDao<T> implements IBaseDao<T> {
   }
   find(filter?: Partial<T>): Promise<T[]> {
     const values = Object.values(filter).filter((e) => e);
-    console.log({values});
-    
+
     return this.collection.find<T>(values.length ? filter : {}).toArray();
   }
   findById(id: string): Promise<T> {
     const _id = new ObjectId(id) as Filter<T>;
     return this.collection.findOne<T>({ _id });
   }
-  update(id: string, data: Partial<T>): Promise<T> {
+  async update(id: string, data: Partial<T>): Promise<boolean> {
     const _id = new ObjectId(id) as Filter<T>;
-    return this.collection.updateOne({ _id }, data) as Promise<T>;
+    const { modifiedCount } = await this.collection.updateOne({ _id }, {
+      $set: data,
+    } as UpdateFilter<T>);
+    return modifiedCount > 0;
   }
-  delete(id: string): Promise<T> {
+  async delete(id: string): Promise<boolean> {
     const _id = new ObjectId(id) as Filter<T>;
-    return this.collection.deleteOne({ _id }) as Promise<T>;
+    const { deletedCount } = await this.collection.deleteOne({ _id });
+    return deletedCount > 0
   }
 }

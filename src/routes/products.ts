@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { ProductsMysqlDao } from "../dao/mysql/ProductsMysqlDao";
-// import { ProductsMongoDao } from "../dao/mongo/ProductsMongoDao";
+// import { ProductsMysqlDao } from "../dao/mysql/ProductsMysqlDao";
+import { ProductsMongoDao } from "../dao/mongo/ProductsMongoDao";
 
-const products = new ProductsMysqlDao();
-// const products = new ProductsMongoDao();
+// const products = new ProductsMysqlDao();
+const products = new ProductsMongoDao();
 
 const prodsRouter = Router();
 
@@ -46,10 +46,10 @@ prodsRouter.put("/:id", async (req, res) => {
   }
 });
 
-prodsRouter.delete("/:id", (req, res) => {
+prodsRouter.delete("/:id", async(req, res) => {
   try {
     const { id } = req.params;
-    const data = products.delete(id);
+    const data = await products.delete(id);
     res.json({ msg: `delete ${id} products`, data });
   } catch (error) {
     res.status(500).json({ error: error.message });
