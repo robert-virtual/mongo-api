@@ -27,7 +27,7 @@ export class UserMongoDao extends AbstractMongoDao<IUser> {
     return {
       data,
       ...genTokens({
-        userId: data._id as string,
+        userId: data.insertedId.toString() ,
       }),
     };
   }

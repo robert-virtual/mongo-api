@@ -1,11 +1,14 @@
 import {
   Collection,
   Db,
+  DeleteResult,
   Filter,
+  InsertOneResult,
   MongoClient,
   ObjectId,
   OptionalUnlessRequiredId,
   UpdateFilter,
+  UpdateResult,
 } from "mongodb";
 import { IBaseDao } from "../IBaseDao";
 
@@ -20,11 +23,10 @@ export abstract class AbstractMongoDao<T> implements IBaseDao<T> {
     this.db = connection.db();
     this.collection = this.db.collection<T>(persistenceName);
   }
-  async create(data: T): Promise<T> {
-    const { insertedId: _id } = await this.collection.insertOne(
-      data as OptionalUnlessRequiredId<T>
-    );
-    return { ...data, _id };
+   create(data: T): Promise<InsertOneResult> {
+     return this.collection.insertOne(
+       data as OptionalUnlessRequiredId<T>
+     );
   }
   find(filter?: Partial<T>): Promise<T[]> {
     const values = Object.values(filter).filter((e) => e);
@@ -40,16 +42,14 @@ export abstract class AbstractMongoDao<T> implements IBaseDao<T> {
     const _id = new ObjectId(id) as Filter<T>;
     return this.collection.findOne<T>({ _id });
   }
-  async update(id: string, data: Partial<T>): Promise<boolean> {
+   update(id: string, data: Partial<T>): Promise<UpdateResult> {
     const _id = new ObjectId(id) as Filter<T>;
-    const { modifiedCount } = await this.collection.updateOne({ _id }, {
+    return this.collection.updateOne({ _id }, {
       $set: data,
     } as UpdateFilter<T>);
-    return modifiedCount > 0;
   }
-  async delete(id: string): Promise<boolean> {
+   delete(id: string): Promise<DeleteResult> {
     const _id = new ObjectId(id) as Filter<T>;
-    const { deletedCount } = await this.collection.deleteOne({ _id });
-    return deletedCount > 0
+    return this.collection.deleteOne({ _id });
   }
 }

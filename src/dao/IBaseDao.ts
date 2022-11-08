@@ -3,7 +3,7 @@
 export interface IBaseDao<T>{
   connection:unknown
   persistenceName:string
-  create(data:T):Promise<T>
+  create(data:T):Promise<unknown>
   find(filter?:Partial<T>):Promise<T[]>
   findOne(filter?:Partial<T>):Promise<T>
   findById(id:string):Promise<T>
