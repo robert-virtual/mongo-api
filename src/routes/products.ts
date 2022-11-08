@@ -1,17 +1,27 @@
 import { Router } from "express";
 // import { ProductsMysqlDao } from "../dao/mysql/ProductsMysqlDao";
 import { ProductsMongoDao } from "../dao/mongo/ProductsMongoDao";
+import { checkJwt } from "../middlewares/jwtMW";
 
 // const products = new ProductsMysqlDao();
 const products = new ProductsMongoDao();
 
 const prodsRouter = Router();
 
-prodsRouter.get("/", async (req, res) => {
+prodsRouter.get("/", checkJwt,async (req, res) => {
   try {
     const { name } = req.query as { name: string };
     const data = await products.find({ name });
     res.json({ msg: "get products", data });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+prodsRouter.get("/get/count", async (_req, res) => {
+  try {
+    const count = await products.collection.countDocuments();
+    res.json({ count });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -27,9 +37,9 @@ prodsRouter.get("/:id", async (req, res) => {
   }
 });
 
-prodsRouter.post("/", async (req, res) => {
+prodsRouter.post("/",checkJwt, async (req, res) => {
   try {
-    const data = await products.create(req.body);
+    const data = await products.create({...req.body,user:req.user.userId});
     res.json({ msg: "post products", data });
   } catch (error) {
     res.status(500).json({ error: error.message });

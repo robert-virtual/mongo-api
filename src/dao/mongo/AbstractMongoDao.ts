@@ -31,6 +31,11 @@ export abstract class AbstractMongoDao<T> implements IBaseDao<T> {
 
     return this.collection.find<T>(values.length ? filter : {}).toArray();
   }
+  findOne(filter?: Partial<T>): Promise<T> {
+    const values = Object.values(filter).filter((e) => e);
+
+    return this.collection.findOne<T>(values.length ? filter : {})
+  }
   findById(id: string): Promise<T> {
     const _id = new ObjectId(id) as Filter<T>;
     return this.collection.findOne<T>({ _id });

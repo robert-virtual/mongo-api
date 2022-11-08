@@ -6,6 +6,7 @@ if (process.env.NODE_ENV != "production") {
 import express from "express";
 import cors from "cors";
 import prodsRouter from "./routes/products";
+import authRouter from "./routes/auth";
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -18,9 +19,10 @@ app.use(cors())
 
 //routes
 app.use("/products",prodsRouter)
+app.use("/auth",authRouter)
 
 
 
 app.listen(port, () => {
-  console.log(`server running on port ${port}...`);
+  console.log(`Server running on port ${port}...`);
 });
