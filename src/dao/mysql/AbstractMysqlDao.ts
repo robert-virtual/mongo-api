@@ -1,3 +1,4 @@
+import { Document, AggregateOptions } from "mongodb";
 import { Connection, OkPacket, RowDataPacket } from "mysql2/promise";
 import { IBaseDao } from "../IBaseDao";
 
@@ -9,6 +10,15 @@ export abstract class AbstractMysqlDao<T> implements IBaseDao<T> {
     connection.then((x) => {
       this.connection = x;
     });
+  }
+  findOne(filter?: Partial<T>): Promise<T> {
+    throw new Error("Method not implemented.");
+  }
+  aggregate(
+    pipeline?: Document[],
+    options?: AggregateOptions
+  ): Promise<Document[]> {
+    throw new Error("Method not implemented.");
   }
   async create(data: T): Promise<T> {
     const values = Object.values(data);

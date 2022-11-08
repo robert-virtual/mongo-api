@@ -1,7 +1,9 @@
 import {
+    AggregateOptions,
   Collection,
   Db,
   DeleteResult,
+  Document,
   Filter,
   InsertOneResult,
   MongoClient,
@@ -23,15 +25,16 @@ export abstract class AbstractMongoDao<T> implements IBaseDao<T> {
     this.db = connection.db();
     this.collection = this.db.collection<T>(persistenceName);
   }
-   create(data: T): Promise<InsertOneResult> {
-     return this.collection.insertOne(
-       data as OptionalUnlessRequiredId<T>
-     );
+  aggregate(pipeline?:Document[],options?:AggregateOptions) {
+    return this.collection.aggregate(pipeline,options).toArray()
   }
-  find(filter?: Partial<T>): Promise<T[]> {
-    const values = Object.values(filter).filter((e) => e);
-
-    return this.collection.find<T>(values.length ? filter : {}).toArray();
+  create(data: T): Promise<InsertOneResult> {
+    return this.collection.insertOne(
+      data as OptionalUnlessRequiredId<T>
+    );
+  }
+  find(filter?: Filter<T>): Promise<T[]> {
+    return this.collection.find<T>(filter).toArray();
   }
   findOne(filter?: Partial<T>): Promise<T> {
     const values = Object.values(filter).filter((e) => e);
@@ -42,13 +45,13 @@ export abstract class AbstractMongoDao<T> implements IBaseDao<T> {
     const _id = new ObjectId(id) as Filter<T>;
     return this.collection.findOne<T>({ _id });
   }
-   update(id: string, data: Partial<T>): Promise<UpdateResult> {
+  update(id: string, data: Partial<T>): Promise<UpdateResult> {
     const _id = new ObjectId(id) as Filter<T>;
     return this.collection.updateOne({ _id }, {
       $set: data,
     } as UpdateFilter<T>);
   }
-   delete(id: string): Promise<DeleteResult> {
+  delete(id: string): Promise<DeleteResult> {
     const _id = new ObjectId(id) as Filter<T>;
     return this.collection.deleteOne({ _id });
   }

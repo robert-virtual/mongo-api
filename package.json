@@ -2,7 +2,7 @@
   "name": "mongo-api",
   "version": "1.0.0",
   "description": "",
-  "main": "src/app.ts",
+  "main": "dist/app.js",
   "scripts": {
     "dev": "nodemon",
     "watch": "tsc -w",

@@ -8,10 +8,10 @@ const products = new ProductsMongoDao();
 
 const prodsRouter = Router();
 
-prodsRouter.get("/", checkJwt,async (req, res) => {
+prodsRouter.get("/", async (req, res) => {
   try {
     const { name } = req.query as { name: string };
-    const data = await products.find({ name });
+    const data = await products.find({ name: {  $regex:new RegExp(name,"i") } });
     res.json({ msg: "get products", data });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -27,6 +27,23 @@ prodsRouter.get("/get/count", async (_req, res) => {
   }
 });
 
+prodsRouter.get("/get/size", async (_req, res) => {
+  try {
+    const result = await products.aggregate([
+      {
+        $group: {
+          _id: "$size",
+          count: { $count: {} },
+          totalPrice: { $sum: "$price" },
+        },
+      },
+    ]);
+    res.json({ result });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 prodsRouter.get("/:id", async (req, res) => {
   try {
     const { id: _id } = req.params;
@@ -37,9 +54,9 @@ prodsRouter.get("/:id", async (req, res) => {
   }
 });
 
-prodsRouter.post("/",checkJwt, async (req, res) => {
+prodsRouter.post("/", checkJwt, async (req, res) => {
   try {
-    const data = await products.create({...req.body,user:req.user.userId});
+    const data = await products.create({ ...req.body, user: req.user.userId });
     res.json({ msg: "post products", data });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -56,7 +73,7 @@ prodsRouter.put("/:id", async (req, res) => {
   }
 });
 
-prodsRouter.delete("/:id", async(req, res) => {
+prodsRouter.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const data = await products.delete(id);
