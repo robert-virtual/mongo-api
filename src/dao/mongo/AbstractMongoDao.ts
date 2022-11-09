@@ -28,6 +28,11 @@ export abstract class AbstractMongoDao<T> implements IBaseDao<T> {
   aggregate(pipeline?:Document[],options?:AggregateOptions) {
     return this.collection.aggregate(pipeline,options).toArray()
   }
+  createMany(data: T[]): Promise<unknown> {
+    return this.collection.insertMany(
+      data as OptionalUnlessRequiredId<T>[]
+    );
+  }
   create(data: T): Promise<InsertOneResult> {
     return this.collection.insertOne(
       data as OptionalUnlessRequiredId<T>
